@@ -1,8 +1,7 @@
 import Q from "./queries.js";
-import getCurrentTime from "../../utils/getCurrentTime.js";
 import { runPoolQuery } from "../../config/db.js";
-import { NotFoundError, ForbiddenError } from "../../utils.js";
-import moment from "moment";
+import CommonUtils from "../../utils/common.js";
+import { NotFoundError, ForbiddenError } from "../../utils/errors.js";
 
 class PostService {
   static async getPostInfo(data) {
@@ -13,16 +12,13 @@ class PostService {
       throw new NotFoundError("Пост не найден.");
     }
 
-    let isLiked;
-    if (nick) {
-      isLiked = await runPoolQuery(Q.GET_IS_LIKED, [postId, nick]);
-    }
+    const isLiked = await runPoolQuery(Q.GET_IS_LIKED, [postId, nick]);
     const is_liked = Boolean(isLiked);
 
     const likesCount = await runPoolQuery(Q.GET_LIKES_COUNT, [postId]);
     const likes_count = Number(likesCount.count);
 
-    const created_on = moment.unix(post.created_on).format("DD-MM-YYYY");
+    const created_on = CommonUtils.formatTime(post.created_on);
     const tags = post.tags.split("").map((tag) => Number(tag));
 
     return { ...post, is_liked, likes_count, tags, created_on };
@@ -37,10 +33,10 @@ class PostService {
 
   static async createPost(data) {
     const { post, nick } = data;
-    const { location, description, tags } = post;
+    const { image, location, description, tags } = post;
 
     const tagsFormatted = tags.sort((a, b) => a - b).join("");
-    const createdOn = getCurrentTime();
+    const createdOn = CommonUtils.getCurrentTime();
 
     const id = await runPoolQuery(Q.CREATE_POST, [
       location,
@@ -50,12 +46,14 @@ class PostService {
       nick,
     ]);
 
+    await CommonUtils.saveBase64Image(image, id);
+
     return id;
   }
 
   static async updatePost(data) {
     const { postId, nick, post } = data;
-    const { location, description, tags } = post;
+    const { image, location, description, tags } = post;
 
     const postInfo = await runPoolQuery(Q.GET_POST_BY_ID, [postId]);
 
@@ -66,6 +64,8 @@ class PostService {
     if (postInfo.author_nick !== nick) {
       throw new ForbiddenError("Вам запрещено редактировать данный пост!");
     }
+
+    await CommonUtils.saveBase64Image(image, id);
 
     const updatedPost = await runPoolQuery(Q.UPDATE_POST_BY_ID, [
       location,

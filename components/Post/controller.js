@@ -1,18 +1,18 @@
-import Utils from "../../utils.js";
-import getNick from "../../utils/getNick.js";
 import PostService from "./service.js";
+import ErrorsUtils from "../../utils/errors.js";
+import CommonUtils from "../../utils/common.js";
 
 class PostController {
   static async getById(req, res) {
     const postId = req.query.id;
-    const nick = getNick(req.headers.token);
+    const nick = CommonUtils.getNick(req.headers.token);
     try {
       const data = { postId, nick };
       const post = await PostService.getPostInfo(data);
 
       return res.status(200).json(post);
     } catch (err) {
-      return Utils.catchError(res, err);
+      return ErrorsUtils.catchError(res, err);
     }
   }
 
@@ -23,7 +23,7 @@ class PostController {
 
       return res.status(200).json(posts);
     } catch (err) {
-      return Utils.catchError(res, err);
+      return ErrorsUtils.catchError(res, err);
     }
   }
 
@@ -36,47 +36,47 @@ class PostController {
 
       return res.status(200).json(postId);
     } catch (err) {
-      return Utils.catchError(res, err);
+      return ErrorsUtils.catchError(res, err);
     }
   }
 
   static async updateById(req, res) {
     const postId = req.query.id;
     const post = req.body;
-    const nick = getNick(req.headers.token);
+    const nick = CommonUtils.getNick(req.headers.token);
     try {
       const data = { postId, nick, post };
       const updatedPost = await PostService.updatePost(data);
 
       return res.status(200).json(updatedPost);
     } catch (err) {
-      return Utils.catchError(res, err);
+      return ErrorsUtils.catchError(res, err);
     }
   }
 
   static async deleteById(req, res) {
     const postId = req.query.id;
-    const nick = getNick(req.headers.token);
+    const nick = CommonUtils.getNick(req.headers.token);
     try {
       const data = { postId, nick };
       await PostService.deletePost(data);
 
       return res.sendStatus(200);
     } catch (err) {
-      return Utils.catchError(res, err);
+      return ErrorsUtils.catchError(res, err);
     }
   }
 
   static async toggleLikeById(req, res) {
     const postId = req.query.id;
-    const nick = getNick(req.headers.token);
+    const nick = CommonUtils.getNick(req.headers.token);
     try {
       const data = { postId, nick };
       const isLiked = await PostService.toggleLikePost(data);
 
       return res.status(200).json(isLiked);
     } catch (err) {
-      return Utils.catchError(res, err);
+      return ErrorsUtils.catchError(res, err);
     }
   }
 
@@ -88,7 +88,7 @@ class PostController {
 
       return res.status(200).json(response);
     } catch (err) {
-      return Utils.catchError(res, err);
+      return ErrorsUtils.catchError(res, err);
     }
   }
 }

@@ -1,8 +1,8 @@
 import Q from "./queries.js";
 import POST from "../Post/queries.js";
 import { runPoolQuery } from "../../config/db.js";
-import getCurrentTime from "../../utils/getCurrentTime.js";
-import { NotFoundError, ForbiddenError } from "../../utils.js";
+import CommonUtils from "../../utils/common.js";
+import { NotFoundError, ForbiddenError } from "../../utils/errors.js";
 
 class CommentService {
   static async getComments(postId) {
@@ -24,7 +24,7 @@ class CommentService {
       throw new NotFoundError("Пост не найден.");
     }
 
-    const createdOn = getCurrentTime();
+    const createdOn = CommonUtils.getCurrentTime();
 
     const commentId = await runPoolQuery(Q.CREATE_COMMENT, [
       postId,

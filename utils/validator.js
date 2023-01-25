@@ -1,56 +1,54 @@
-import createUserIfNotExists from "./createUser.js";
 import admin from "../config/firebaseAdmin.js";
-import {
+import ErrorUtils, {
   ForbiddenError,
   UnprocessableEntityError,
   UnauthorizedError,
-} from "../utils.js";
-import Utils from "../utils.js";
+} from "./errors.js";
+import CommonUtils from "./common.js";
 
 class Validator {
+  static async processRequestData(req, schema) {
+    try {
+      await schema.validate({
+        body: req.body,
+        query: req.query,
+      });
+    } catch (error) {
+      throw new UnprocessableEntityError(error);
+    }
+  }
+
+  static async validateToken(token) {
+    if (!token) {
+      throw new UnauthorizedError();
+    }
+
+    try {
+      const decodedValue = await admin.auth().verifyIdToken(token);
+
+      if (decodedValue) {
+        await CommonUtils.createUserIfNotExists(token);
+        return next();
+      }
+    } catch (error) {
+      throw new ForbiddenError(error);
+    }
+  }
+
   static async validateRequest(req, res, next, schema, tokenRequired = false) {
     try {
-      if (schema) {
-        try {
-          await schema.validate({
-            body: req.body,
-            query: req.query,
-          });
-        } catch (err) {
-          const error = new UnprocessableEntityError();
-
-          error.value = err.path;
-          error.errors = err.errors;
-
-          throw error;
-        }
-      }
-
       if (tokenRequired) {
         const token = req.headers.token;
+        await Validator.validateToken(token);
+      }
 
-        if (!token) {
-          throw new UnauthorizedError("Вы неавторизованы!");
-        }
-
-        try {
-          const decodedValue = await admin.auth().verifyIdToken(token);
-
-          if (decodedValue) {
-            await createUserIfNotExists(token);
-            return next();
-          }
-        } catch (err) {
-          const error = new ForbiddenError();
-          error.message = err.message;
-
-          throw error;
-        }
+      if (schema) {
+        await Validator.processRequestData(req, schema);
       }
 
       return next();
     } catch (err) {
-      return Utils.catchError(res, err);
+      return ErrorUtils.catchError(res, err);
     }
   }
 }

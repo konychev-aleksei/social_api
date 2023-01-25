@@ -41,9 +41,9 @@ const createTables = async () => {
         );
     `);
 
-    console.log("Таблицы успешно добавлены.");
+    console.log("Таблицы успешно обновлены.");
   } catch (e) {
-    console.log("Ошибка добавления таблиц.", e);
+    console.log("Ошибка обновления таблиц.", e);
   }
 };
 

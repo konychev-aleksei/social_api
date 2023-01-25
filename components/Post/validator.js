@@ -3,12 +3,17 @@ import * as Yup from "yup";
 
 export const postId = Yup.object({
   query: Yup.object({
-    id: Yup.number().typeError("Значение должно быть числом!"),
+    id: Yup.number()
+      .required("Поле обязательно!")
+      .typeError("Значение должно быть числом!"),
   }),
 });
 
 const post = Yup.object({
   body: Yup.object({
+    image: Yup.string()
+      .required("Поле обязательно!")
+      .typeError("Значение должно быть строкой!"),
     location: Yup.string()
       .required("Поле обязательно!")
       .typeError("Значение должно быть строкой!")
