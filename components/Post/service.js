@@ -1,4 +1,4 @@
-import Q from "./queries.js";
+import POST_QUERIES from "./queries.js";
 import getCurrentTime from "../../utils/getCurrentTime.js";
 import { runPoolQuery } from "../../config/db.js";
 import { NotFoundError, ForbiddenError } from "../../utils.js";
@@ -7,7 +7,7 @@ import moment from "moment";
 class PostService {
   static async getPostInfo(data) {
     const { postId, nick } = data;
-    const post = await runPoolQuery(Q.GET_POST_BY_ID, [postId]);
+    const post = await runPoolQuery(POST_QUERIES.GET_POST_BY_ID, [postId]);
 
     if (!post) {
       throw new NotFoundError("Пост не найден.");
@@ -15,11 +15,11 @@ class PostService {
 
     let isLiked;
     if (nick) {
-      isLiked = await runPoolQuery(Q.GET_IS_LIKED, [postId, nick]);
+      isLiked = await runPoolQuery(POST_QUERIES.GET_IS_LIKED, [postId, nick]);
     }
     const is_liked = Boolean(isLiked);
 
-    const likesCount = await runPoolQuery(Q.GET_LIKES_COUNT, [postId]);
+    const likesCount = await runPoolQuery(POST_QUERIES.GET_LIKES_COUNT, [postId]);
     const likes_count = Number(likesCount.count);
 
     const created_on = moment.unix(post.created_on).format("DD-MM-YYYY");
@@ -29,7 +29,7 @@ class PostService {
   }
 
   static async getPostsByNick(nick) {
-    const posts = await runPoolQuery(Q.GET_POSTS_BY_NICK, [nick], false);
+    const posts = await runPoolQuery(POST_QUERIES.GET_POSTS_BY_NICK, [nick], false);
     const ids = posts.map((post) => post.id);
 
     return ids;
@@ -42,7 +42,7 @@ class PostService {
     const tagsFormatted = tags.sort((a, b) => a - b).join("");
     const createdOn = getCurrentTime();
 
-    const id = await runPoolQuery(Q.CREATE_POST, [
+    const id = await runPoolQuery(POST_QUERIES.CREATE_POST, [
       location,
       description,
       tagsFormatted,
@@ -57,7 +57,7 @@ class PostService {
     const { postId, nick, post } = data;
     const { location, description, tags } = post;
 
-    const postInfo = await runPoolQuery(Q.GET_POST_BY_ID, [postId]);
+    const postInfo = await runPoolQuery(POST_QUERIES.GET_POST_BY_ID, [postId]);
 
     if (!postInfo) {
       throw new NotFoundError("Пост не найден.");
@@ -67,7 +67,7 @@ class PostService {
       throw new ForbiddenError("Вам запрещено редактировать данный пост!");
     }
 
-    const updatedPost = await runPoolQuery(Q.UPDATE_POST_BY_ID, [
+    const updatedPost = await runPoolQuery(POST_QUERIES.UPDATE_POST_BY_ID, [
       location,
       description,
       tags,
@@ -83,7 +83,7 @@ class PostService {
 
   static async deletePost(data) {
     const { postId, nick } = data;
-    const postInfo = await runPoolQuery(Q.GET_POST_BY_ID, [postId]);
+    const postInfo = await runPoolQuery(POST_QUERIES.GET_POST_BY_ID, [postId]);
 
     if (!postInfo) {
       throw new NotFoundError("Пост не найден.");
@@ -93,12 +93,12 @@ class PostService {
       throw new ForbiddenError("Вам запрещено удалять данный пост!");
     }
 
-    await runPoolQuery(Q.DELETE_POST_BY_ID, [postId]);
+    await runPoolQuery(POST_QUERIES.DELETE_POST_BY_ID, [postId]);
   }
 
   static async toggleLikePost(data) {
     const { postId, nick } = data;
-    const postInfo = await runPoolQuery(Q.GET_POST_BY_ID, [postId]);
+    const postInfo = await runPoolQuery(POST_QUERIES.GET_POST_BY_ID, [postId]);
 
     if (!postInfo) {
       throw new NotFoundError("Пост не найден.");
@@ -109,9 +109,9 @@ class PostService {
     }
 
     if (postInfo.liked) {
-      await runPoolQuery(Q.UNLIKE_POST, [postId, nick]);
+      await runPoolQuery(POST_QUERIES.UNLIKE_POST, [postId, nick]);
     } else {
-      await runPoolQuery(Q.LIKE_POST, [postId, nick]);
+      await runPoolQuery(POST_QUERIES.LIKE_POST, [postId, nick]);
     }
 
     return !postInfo.liked;
@@ -119,7 +119,7 @@ class PostService {
 
   static async search(data) {
     const { query, tag } = data;
-    const response = await runPoolQuery(Q.SEARCH, [query, tag], false);
+    const response = await runPoolQuery(POST_QUERIES.SEARCH, [query, tag], false);
 
     return response;
   }
