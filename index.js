@@ -15,6 +15,8 @@ app.use(bodyParser.json());
 app.use("/post", PostRoutes);
 app.use("/comment", CommentRoutes);
 
+app.use("/image", express.static("public"));
+
 (async () => {
   await createTables();
   app.listen(PORT, () => {

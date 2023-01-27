@@ -9,6 +9,12 @@ export const postId = Yup.object({
   }),
 });
 
+export const nick = Yup.object({
+  query: Yup.object({
+    nick: Yup.string().required("Поле обязательно!"),
+  }),
+});
+
 const post = Yup.object({
   body: Yup.object({
     image: Yup.string()
@@ -51,7 +57,7 @@ class PostValidator {
   }
 
   static getByNick(req, res, next) {
-    return Validator.validateRequest(req, res, next, null);
+    return Validator.validateRequest(req, res, next, nick);
   }
 
   static create(req, res, next) {
