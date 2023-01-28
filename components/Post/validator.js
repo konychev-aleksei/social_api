@@ -13,7 +13,12 @@ const post = Yup.object({
   body: Yup.object({
     image: Yup.string()
       .required("Поле обязательно!")
-      .typeError("Значение должно быть строкой!"),
+      .typeError("Значение должно быть строкой!")
+      .test(
+        "maxSize",
+        "Вес картинки не должен первышать 5 Мб!",
+        (value) => (value.length * 0.75) / 1024 ** 2 < 5
+      ),
     location: Yup.string()
       .required("Поле обязательно!")
       .typeError("Значение должно быть строкой!")
