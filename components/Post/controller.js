@@ -17,7 +17,7 @@ class PostController {
   }
 
   static async getByNick(req, res) {
-    const nick = getNick(req.headers.token);
+    const nick = req.query.nick;
     try {
       const posts = await PostService.getPostsByNick(nick);
 

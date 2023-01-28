@@ -4,7 +4,7 @@ import CommonUtils from "../../utils/common.js";
 
 class CommentController {
   static async getByPostId(req, res) {
-    const postId = req.query.postId;
+    const postId = req.query.id;
     try {
       const post = await CommentService.getComments(postId);
 
