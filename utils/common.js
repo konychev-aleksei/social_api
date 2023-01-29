@@ -1,5 +1,6 @@
 import fs from "fs";
 import moment from "moment";
+import formidable from "formidable";
 import { runPoolQuery } from "../config/db.js";
 
 class CommonUtils {
@@ -23,6 +24,25 @@ class CommonUtils {
   static async saveBase64Image(base64Image, name) {
     const base64Data = base64Image.replace(/^data:image\/png;base64,/, "");
     await fs.writeFile(`${name}.png`, base64Data, "base64");
+  }
+
+  static async parseFormData(req) {
+    const form = new formidable.IncomingForm({ multiples: true });
+
+    return new Promise((resolve, reject) => {
+      form.parse(req, (error, fields, files) => {
+        if (error) {
+          reject(error);
+        }
+
+        console.log("ttt", fields);
+
+        resolve({
+          ...fields,
+          ...files,
+        });
+      });
+    });
   }
 
   static getNick(token) {

@@ -11,8 +11,8 @@ const Q = {
     VALUES ($1, $2, $3, $4, $5) 
     RETURNING id`,
   UPDATE_POST_BY_ID: `UPDATE Posts 
-    SET location = $1, description = $2, tags = $3 
-    WHERE id = $4 
+    SET description = $1, tags = $2 
+    WHERE id = $3 
     RETURNING *`,
   DELETE_POST_BY_ID: "DELETE FROM Posts WHERE id = $1",
   LIKE: "INSERT INTO Likes (post_id, nick) VALUES ($1, $2)",

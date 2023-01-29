@@ -50,6 +50,7 @@ class PostController {
 
       return res.status(200).json(updatedPost);
     } catch (err) {
+      console.log(err);
       return ErrorsUtils.catchError(res, err);
     }
   }

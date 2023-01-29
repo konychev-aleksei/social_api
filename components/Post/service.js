@@ -1,7 +1,13 @@
 import Q from "./queries.js";
 import { runPoolQuery } from "../../config/db.js";
 import CommonUtils from "../../utils/common.js";
-import { NotFoundError, ForbiddenError } from "../../utils/errors.js";
+import {
+  NotFoundError,
+  ForbiddenError,
+  UnprocessableEntityError,
+} from "../../utils/errors.js";
+
+import fs from "fs";
 
 class PostService {
   static async getPostInfo(data) {
@@ -33,7 +39,7 @@ class PostService {
 
   static async createPost(data) {
     const { post, nick } = data;
-    const { image, location, description, tags } = post;
+    const { image, description, tags } = post;
 
     const tagsFormatted = tags.sort((a, b) => a - b).join("");
     const createdOn = CommonUtils.getCurrentTime();
@@ -46,15 +52,14 @@ class PostService {
       nick,
     ]);
 
-    await CommonUtils.saveBase64Image(image, id);
-
     return id;
   }
 
   static async updatePost(data) {
     const { postId, nick, post } = data;
-    const { image, location, description, tags } = post;
+    const { image, description } = post;
 
+    const tags = (post.tags ?? []).sort((a, b) => a - b).join("");
     const postInfo = await runPoolQuery(Q.GET_POST_BY_ID, [postId]);
 
     if (!postInfo) {
@@ -65,18 +70,21 @@ class PostService {
       throw new ForbiddenError("Вам запрещено редактировать данный пост!");
     }
 
-    await CommonUtils.saveBase64Image(image, id);
+    //await CommonUtils.saveBase64Image(image, id);
+    if (image) {
+      await fs.rename(image.filepath, `./public/${postId}.png`, (error) => {
+        if (error) {
+          console.log(error);
+          //throw new UnprocessableEntityError(error);
+        }
+      });
+    }
 
     const updatedPost = await runPoolQuery(Q.UPDATE_POST_BY_ID, [
-      location,
       description,
       tags,
       postId,
     ]);
-
-    if (!updatedPost) {
-      throw new Error("Ошибка редактирования поста.");
-    }
 
     return updatedPost;
   }

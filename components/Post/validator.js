@@ -17,18 +17,6 @@ export const nick = Yup.object({
 
 const post = Yup.object({
   body: Yup.object({
-    image: Yup.string()
-      .required("Поле обязательно!")
-      .typeError("Значение должно быть строкой!")
-      .test(
-        "maxSize",
-        "Вес картинки не должен первышать 5 Мб!",
-        (value) => (value.length * 0.75) / 1024 ** 2 < 5
-      ),
-    location: Yup.string()
-      .required("Поле обязательно!")
-      .typeError("Значение должно быть строкой!")
-      .max(10, "Максимальная длина - 10 символов"),
     description: Yup.string()
       .required("Поле обязательно!")
       .typeError("Значение должно быть строкой!")

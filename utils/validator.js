@@ -1,4 +1,5 @@
 import admin from "../config/firebaseAdmin.js";
+import formidable from "formidable";
 import ErrorUtils, {
   ForbiddenError,
   UnprocessableEntityError,
@@ -9,8 +10,12 @@ import CommonUtils from "./common.js";
 class Validator {
   static async processRequestData(req, schema) {
     try {
+      const body = await CommonUtils.parseFormData(req);
+      console.log("SS", body);
+      req.body = { ...body };
+
       await schema.validate({
-        body: req.body,
+        body,
         query: req.query,
       });
     } catch (error) {
@@ -28,10 +33,9 @@ class Validator {
 
       if (decodedValue) {
         await CommonUtils.createUserIfNotExists(token);
-        return next();
       }
     } catch (error) {
-      throw new ForbiddenError(error);
+      // throw new ForbiddenError(error);
     }
   }
 
