@@ -52,6 +52,8 @@ class PostService {
       nick,
     ]);
 
+    await CommonUtils.saveImageById(image, id);
+
     return id;
   }
 
@@ -70,14 +72,8 @@ class PostService {
       throw new ForbiddenError("Вам запрещено редактировать данный пост!");
     }
 
-    //await CommonUtils.saveBase64Image(image, id);
     if (image) {
-      await fs.rename(image.filepath, `./public/${postId}.png`, (error) => {
-        if (error) {
-          console.log(error);
-          //throw new UnprocessableEntityError(error);
-        }
-      });
+      await CommonUtils.saveImageById(image, id);
     }
 
     const updatedPost = await runPoolQuery(Q.UPDATE_POST_BY_ID, [

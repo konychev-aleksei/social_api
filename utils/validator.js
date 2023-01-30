@@ -11,8 +11,7 @@ class Validator {
   static async processRequestData(req, schema) {
     try {
       const body = await CommonUtils.parseFormData(req);
-      console.log("SS", body);
-      req.body = { ...body };
+      req.body = body;
 
       await schema.validate({
         body,
@@ -35,7 +34,7 @@ class Validator {
         await CommonUtils.createUserIfNotExists(token);
       }
     } catch (error) {
-      // throw new ForbiddenError(error);
+      throw new ForbiddenError(error);
     }
   }
 
