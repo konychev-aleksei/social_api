@@ -104,13 +104,15 @@ class PostService {
       throw new ForbiddenError("Вам запрещено редактировать данный пост!");
     }
 
-    if (postInfo.liked) {
-      await runPoolQuery(Q.UNLIKE_POST, [postId, nick]);
+    const isLiked = await runPoolQuery(Q.GET_IS_LIKED, [postId, nick]);
+
+    if (isLiked) {
+      await runPoolQuery(Q.UNLIKE, [postId, nick]);
     } else {
-      await runPoolQuery(Q.LIKE_POST, [postId, nick]);
+      await runPoolQuery(Q.LIKE, [postId, nick]);
     }
 
-    return !postInfo.liked;
+    return !isLiked;
   }
 }
 

@@ -80,18 +80,6 @@ class PostController {
       return ErrorsUtils.catchError(res, err);
     }
   }
-
-  static async search(req, res) {
-    const { query, tag } = req.query;
-    try {
-      const data = { query, tag };
-      const response = await PostService.search(data);
-
-      return res.status(200).json(response);
-    } catch (err) {
-      return ErrorsUtils.catchError(res, err);
-    }
-  }
 }
 
 export default PostController;
