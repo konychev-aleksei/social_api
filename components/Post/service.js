@@ -1,13 +1,7 @@
 import Q from "./queries.js";
 import { runPoolQuery } from "../../config/db.js";
 import CommonUtils from "../../utils/common.js";
-import {
-  NotFoundError,
-  ForbiddenError,
-  UnprocessableEntityError,
-} from "../../utils/errors.js";
-
-import fs from "fs";
+import { NotFoundError, ForbiddenError } from "../../utils/errors.js";
 
 class PostService {
   static async getPostInfo(data) {
@@ -30,11 +24,9 @@ class PostService {
     return { ...post, is_liked, likes_count, tags, created_on };
   }
 
-  static async getPostsByNick(nick) {
-    const posts = await runPoolQuery(Q.GET_POSTS_BY_NICK, [nick], false);
-    const ids = posts.map((post) => post.id);
-
-    return ids;
+  static async getPosts(tag) {
+    const response = await runPoolQuery(Q.SEARCH, [tag], false);
+    return response;
   }
 
   static async createPost(data) {
@@ -43,12 +35,6 @@ class PostService {
 
     const tagsFormatted = tags.sort((a, b) => a - b).join("");
     const createdOn = CommonUtils.getCurrentTime();
-
-    await fs.rename(image.filepath, `./public/${postId}.png`, (error) => {
-      if (error) {
-        throw new UnprocessableEntityError(error);
-      }
-    });
 
     const id = await runPoolQuery(Q.CREATE_POST, [
       location,
@@ -125,13 +111,6 @@ class PostService {
     }
 
     return !postInfo.liked;
-  }
-
-  static async search(data) {
-    const { query, tag } = data;
-    const response = await runPoolQuery(Q.SEARCH, [query, tag], false);
-
-    return response;
   }
 }
 

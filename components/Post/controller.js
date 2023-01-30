@@ -16,10 +16,10 @@ class PostController {
     }
   }
 
-  static async getByNick(req, res) {
-    const nick = req.query.nick;
+  static async getPosts(req, res) {
+    const tag = req.query.tag;
     try {
-      const posts = await PostService.getPostsByNick(nick);
+      const posts = await PostService.getPosts(tag);
 
       return res.status(200).json(posts);
     } catch (err) {

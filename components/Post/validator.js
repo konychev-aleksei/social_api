@@ -34,13 +34,18 @@ const post = Yup.object({
 
 const postAndPostId = post.concat(postId);
 
-const queryAndTag = Yup.object({
+const tag = Yup.object({
   query: Yup.object({
-    query: Yup.string().max(200, "Максимальная длина - 200 символов"),
-    tag: Yup.number()
-      .min(1, "Минимальное значение - 1")
-      .max(8, "Максимальное значение - 8")
-      .typeError("Значение должно быть числом!"),
+    tag: Yup.lazy((value) => {
+      if (value === "") {
+        return Yup.string();
+      }
+
+      return Yup.number()
+        .min(1, "Минимальное значение - 1")
+        .max(8, "Максимальное значение - 8")
+        .typeError("Значение должно быть числом!");
+    }),
   }),
 });
 
@@ -49,8 +54,8 @@ class PostValidator {
     return Validator.validateRequest(req, res, next, postId);
   }
 
-  static getByNick(req, res, next) {
-    return Validator.validateRequest(req, res, next, nick);
+  static getPosts(req, res, next) {
+    return Validator.validateRequest(req, res, next, tag);
   }
 
   static create(req, res, next) {
@@ -67,10 +72,6 @@ class PostValidator {
 
   static toggleLikeById(req, res, next) {
     return Validator.validateRequest(req, res, next, postId, true);
-  }
-
-  static search(req, res, next) {
-    return Validator.validateRequest(req, res, next, queryAndTag);
   }
 }
 
