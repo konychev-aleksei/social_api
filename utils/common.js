@@ -21,9 +21,14 @@ class CommonUtils {
     return moment(timeStamp, "YYYY/MM/DD HH:mm:ss").format("DD-MM-YYYY");
   }
 
-  static async saveBase64Image(base64Image, name) {
-    const base64Data = base64Image.replace(/^data:image\/png;base64,/, "");
-    await fs.writeFile(`${name}.png`, base64Data, "base64");
+  static async saveImageById(image, id) {
+    if (image) {
+      await fs.rename(image.filepath, `./public/${id}.png`, (error) => {
+        if (error) {
+          throw new UnprocessableEntityError(error);
+        }
+      });
+    }
   }
 
   static async parseFormData(req) {
