@@ -44,6 +44,12 @@ class PostService {
     const tagsFormatted = tags.sort((a, b) => a - b).join("");
     const createdOn = CommonUtils.getCurrentTime();
 
+    await fs.rename(image.filepath, `./public/${postId}.png`, (error) => {
+      if (error) {
+        throw new UnprocessableEntityError(error);
+      }
+    });
+
     const id = await runPoolQuery(Q.CREATE_POST, [
       location,
       description,
@@ -74,8 +80,7 @@ class PostService {
     if (image) {
       await fs.rename(image.filepath, `./public/${postId}.png`, (error) => {
         if (error) {
-          console.log(error);
-          //throw new UnprocessableEntityError(error);
+          throw new UnprocessableEntityError(error);
         }
       });
     }

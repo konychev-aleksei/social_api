@@ -29,7 +29,7 @@ class PostController {
 
   static async create(req, res) {
     const post = req.body;
-    const nick = getNick(req.headers.token);
+    const nick = CommonUtils.getNick(req.headers.token);
     try {
       const data = { post, nick };
       const postId = await PostService.createPost(data);
