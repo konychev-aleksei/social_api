@@ -65,7 +65,7 @@ class PostService {
     }
 
     if (image) {
-      await CommonUtils.saveImageById(image, id);
+      await CommonUtils.saveImageById(image, postId);
     }
 
     const updatedPost = await runPoolQuery(Q.UPDATE_POST_BY_ID, [

@@ -18,7 +18,9 @@ class CommonUtils {
   }
 
   static formatTime(timeStamp) {
-    return moment(timeStamp, "YYYY/MM/DD HH:mm:ss").format("DD-MM-YYYY");
+    return moment(timeStamp, "YYYY/MM/DD HH:mm:ss").format(
+      "DD-MM-YYYY HH:mm:ss"
+    );
   }
 
   static async saveImageById(image, id) {
@@ -39,8 +41,6 @@ class CommonUtils {
         if (error) {
           reject(error);
         }
-
-        console.log("ttt", fields);
 
         resolve({
           ...fields,

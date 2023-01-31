@@ -44,6 +44,7 @@ class PostController {
     const postId = req.query.id;
     const post = req.body;
     const nick = CommonUtils.getNick(req.headers.token);
+
     try {
       const data = { postId, nick, post };
       const updatedPost = await PostService.updatePost(data);
