@@ -24,7 +24,7 @@ class PostService {
     return { ...post, is_liked, likes_count, tags, created_on };
   }
 
-  static async getPosts(tag) {
+  static async getPosts(tag = "") {
     const response = await runPoolQuery(Q.SEARCH, [tag], false);
     return response;
   }
@@ -36,8 +36,7 @@ class PostService {
     const tagsFormatted = tags.sort((a, b) => a - b).join("");
     const createdOn = CommonUtils.getCurrentTime();
 
-    const id = await runPoolQuery(Q.CREATE_POST, [
-      location,
+    const { id } = await runPoolQuery(Q.CREATE_POST, [
       description,
       tagsFormatted,
       createdOn,
