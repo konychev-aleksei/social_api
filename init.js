@@ -12,7 +12,7 @@ import { runPoolQuery } from "./config/db.js";
         CREATE TABLE IF NOT EXISTS Posts (
             id SERIAL PRIMARY KEY,
             description VARCHAR (200) NOT NULL,
-            tags VARCHAR (8),
+            tags VARCHAR (7),
             created_on TIMESTAMP NOT NULL,
             author_nick VARCHAR (31) NOT NULL,
             FOREIGN KEY (author_nick) REFERENCES Users (nick) ON DELETE CASCADE

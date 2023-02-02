@@ -1,4 +1,4 @@
-const Q = {
+const QUERIES = {
   GET_POST_BY_ID: `SELECT * FROM Posts WHERE id = $1`,
   GET_LIKES_COUNT: `SELECT COUNT(*) FROM Likes WHERE post_id = $1`,
   GET_IS_LIKED: `SELECT * FROM Likes WHERE post_id = $1 AND nick = $2`,
@@ -16,4 +16,4 @@ const Q = {
   SEARCH: `SELECT id, author_nick FROM Posts WHERE tags ~ $1 OR $1 = ''`,
 };
 
-export default Q;
+export default QUERIES;

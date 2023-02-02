@@ -31,6 +31,14 @@ class CommonUtils {
     }
   }
 
+  static async deleteImageById(id) {
+    await fs.unlink(`./public/${id}.png`, (error) => {
+      if (error) {
+        throw new UnprocessableEntityError(error);
+      }
+    });
+  }
+
   static async parseFormData(req) {
     const form = new formidable.IncomingForm({ multiples: true });
 
