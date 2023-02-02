@@ -15,20 +15,18 @@ export const nick = Yup.object({
   }),
 });
 
+const tagSchema = Yup.number()
+  .min(1, "Минимальное значение - 1")
+  .max(7, "Максимальное значение - 7")
+  .typeError("Значение должно быть числом!");
+
 const post = Yup.object({
   body: Yup.object({
     description: Yup.string()
       .required("Поле обязательно!")
       .typeError("Значение должно быть строкой!")
       .max(200, "Максимальная длина - 200 символов"),
-    tags: Yup.array()
-      .of(
-        Yup.number()
-          .min(1, "Минимальное значение - 1")
-          .max(7, "Максимальное значение - 7")
-          .typeError("Значение должно быть числом!")
-      )
-      .typeError("Значение должно быть массивом!"),
+    tags: Yup.array().of(tagSchema).typeError("Значение должно быть массивом!"),
   }),
 });
 
@@ -41,10 +39,7 @@ const tag = Yup.object({
         return Yup.string();
       }
 
-      return Yup.number()
-        .min(1, "Минимальное значение - 1")
-        .max(7, "Максимальное значение - 7")
-        .typeError("Значение должно быть числом!");
+      return tagSchema;
     }),
   }),
 });
